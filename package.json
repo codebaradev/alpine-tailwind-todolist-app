@@ -1,0 +1,15 @@
+{
+  "name": "alpine-todolist",
+  "version": "1.0.0",
+  "description": "Todo:\r - check\r - title",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tail": "npx tailwindcss -i ./input.css -o ./output.css --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}
