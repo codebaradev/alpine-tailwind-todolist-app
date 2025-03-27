@@ -7,23 +7,21 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="stylesheet" href="output.css">
 </head>
-<body x-data="{todos: [], addTodo: document.getElementById('addTodo')}"  class="bg-[url('/assets/bg2.jpg')] bg-no-repeat bg-cover bg-center h-screen"></body>
-    <script>
-    </script>
+<body x-data  class="bg-[url('/assets/bg2.jpg')] bg-no-repeat bg-cover bg-center h-screen">
     <section id="main" class="py-10 h-screen">
         <div class="container mx-auto w-3/4 h-full flex flex-col">
             <h1 class="text-2xl font-bold text-blue-200 mb-2">Todolist</h1>
             <div  class="flex gap-3 bg-slate-800 p-3 rounded-md shadow-lg mb-3">
-                <input @keyup.enter="todos.push({name: $event.target.value, check: false}); $event.target.value = ''" type="text" placeholder="New todo" id="addTodo" class="p-2 bg-transparent border border-white/50 text-white rounded-md focus:outline-none flex-1">
-                <button @click="todos.push({name: addTodo.value, check: false}); addTodo.value = ''" class="px-3 py-2 bg-blue-500 rounded-lg text-white transition duration-100 hover:bg-blue-600 active:bg-blue-500" >Add</button>
+                <input @keyup.enter="$store.todos.push({name: $event.target.value, check: false}); $event.target.value = ''; $store.save()" type="text" placeholder="New todo" id="addTodo" class="p-2 bg-transparent border border-white/50 text-white rounded-md focus:outline-none flex-1">
+                <button @click="$store.todos.push({name: $store.addTodo.value, check: false}); $store.addTodo.value = ''" class="px-3 py-2 bg-blue-500 rounded-lg text-white transition duration-100 hover:bg-blue-600 active:bg-blue-500" >Add</button>
             </div>
             <div class="flex gap-3 bg-slate-800 p-3 rounded-md shadow-lg flex-1">
                 <table class="border-collapse w-full h-0 border-spacing-1">
-                    <template x-for="(todo, index) in todos">
+                    <template x-for="(todo, index) in $store.todos">
                         <tr class="py-2 hover:bg-white/10 overflow-hidden rounded-md">
                             <td class="align-top pt-1 text-center w-6 pr-2">
                                 <label :for="'check' + index" class="flex justify-center items-center relative cursor-pointer">
-                                    <input class="custom-check w-5 h-5 appearance-none border rounded-full" type="checkbox" :id="'check' + index" x-model="todo.check">
+                                    <input class="custom-check w-5 h-5 appearance-none border rounded-full" type="checkbox" :id="'check' + index" x-model="todo.check" @change="$store.save()">
                                     <div class="absolute opacity-0 checked-label transition duration-150">
                                         <svg width="15px" fill="#1aff53" viewBox="0 -8 72 72" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><title>check</title><path d="M61.07,12.9,57,8.84a2.93,2.93,0,0,0-4.21,0L28.91,32.73,19.2,23A3,3,0,0,0,15,23l-4.06,4.07a2.93,2.93,0,0,0,0,4.21L26.81,47.16a2.84,2.84,0,0,0,2.1.89A2.87,2.87,0,0,0,31,47.16l30.05-30a2.93,2.93,0,0,0,0-4.21Z"></path></g></svg>
                                     </div>
@@ -32,12 +30,12 @@
     
                             <td class="align-top w-full">
                                 <div class="flex">
-                                    <input class="text-white w-full bg-transparent focus:outline-none" x-model="todo.name"></input>
+                                    <input class="text-white w-full bg-transparent focus:outline-none" x-model="todo.name" @keyup="$store.save()"></input>
                                 </div>
                             </td>
                             <td class="align-top text-center pl-2">
                                 <div class="flex">
-                                    <button @click="todos.pop(index)" class="p-[3px] rounded-full hover:bg-white/10">
+                                    <button @click="$store.todos.pop(index); $store.save()" class="p-[3px] rounded-full hover:bg-white/10">
                                         <svg width="20px" height="20px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="#ffffff" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <defs> <style>.cls-1{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px;}</style> </defs> <title></title> <g id="cross"> <line class="cls-1" x1="7" x2="25" y1="7" y2="25"></line> <line class="cls-1" x1="7" x2="25" y1="25" y2="7"></line> </g> </g></svg>
                                     </button>
                                 </div>
@@ -48,5 +46,22 @@
             </div>
         </div>
     </section>
+    
+    <script>
+        const savedTodos = localStorage.getItem("alpinetodolist");
+        const addTodo = document.getElementById('addTodo');
+        const todos = savedTodos ? JSON.parse(savedTodos) : [];
+
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('todos', todos);
+            Alpine.store('addTodo', addTodo);
+
+            // Method
+            
+            Alpine.store('save', () => {
+                localStorage.setItem("alpinetodolist", JSON.stringify(Alpine.store('todos')));
+            });
+        });
+    </script>
 </body>
 </html>
